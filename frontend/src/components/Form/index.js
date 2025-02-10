@@ -18,6 +18,7 @@ const Form = () => {
     signature_name: "",
     student_name: "",
     subject: "",
+    certificate_name: "",
     format: "pdf",
   });
 
@@ -56,12 +57,9 @@ const Form = () => {
     setMessageType("");
 
     const data = new FormData();
-    data.append("date", formData.date);
-    data.append("image", formData.image);
-    data.append("signature_name", formData.signature_name);
-    data.append("student_name", formData.student_name);
-    data.append("subject", formData.subject);
-    data.append("format", formData.format);
+    Object.keys(formData).forEach((key) => {
+      data.append(key, formData[key]);
+    });
 
     try {
       const response = await axios.post("http://localhost:8000/pdf-generator.php", data, {
@@ -106,6 +104,10 @@ const Form = () => {
         <FieldContainer>
           <Label>Subject:<span>*</span></Label>
           <Input type="text" name="subject" value={formData.subject} onChange={handleChange} required />
+        </FieldContainer>
+        <FieldContainer>
+          <Label>Certificate Name:<span>*</span></Label>
+          <Input type="text" name="certificate_name" value={formData.certificate_name} onChange={handleChange} required />
         </FieldContainer>
         <FieldContainer>
           <Label>Format:<span>*</span></Label>

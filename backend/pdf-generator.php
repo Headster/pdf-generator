@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$requiredFields = ['date', 'signature_name', 'student_name', 'subject'];
+$requiredFields = ['date', 'signature_name', 'student_name', 'subject', 'format', 'certificate_name'];
 
 foreach ($requiredFields as $field) {
     if (!isset($_POST[$field]) || empty(trim($_POST[$field]))) {
@@ -66,7 +66,7 @@ $data = [
     ],
     "format" => $format,
     "output" => "url",
-    "name" => "Certificate Example"
+    "name" => htmlspecialchars($_POST['certificate_name'])
 ];
 
 $jsonData = json_encode($data);
