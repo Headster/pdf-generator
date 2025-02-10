@@ -6,6 +6,7 @@ import {
   FieldContainer,
   Label,
   Input,
+  Select,
   Button,
   ErrorMessage,
 } from "./Form.styles";
@@ -17,6 +18,7 @@ const Form = () => {
     signature_name: "",
     student_name: "",
     subject: "",
+    format: "pdf",
   });
 
   const [message, setMessage] = useState("");
@@ -59,6 +61,7 @@ const Form = () => {
     data.append("signature_name", formData.signature_name);
     data.append("student_name", formData.student_name);
     data.append("subject", formData.subject);
+    data.append("format", formData.format);
 
     try {
       const response = await axios.post("http://localhost:8000/pdf-generator.php", data, {
@@ -104,6 +107,16 @@ const Form = () => {
           <Label>Subject:<span>*</span></Label>
           <Input type="text" name="subject" value={formData.subject} onChange={handleChange} required />
         </FieldContainer>
+        <FieldContainer>
+          <Label>Format:<span>*</span></Label>
+          <Select name="format" value={formData.format} onChange={handleChange} required>
+            <option value="pdf">PDF</option>
+            <option value="html">HTML</option>
+            <option value="xlsx">XLSX</option>
+            <option value="zip">ZIP</option>
+          </Select>
+        </FieldContainer>
+
 
         <Button type="submit">Generate</Button>
 

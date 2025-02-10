@@ -31,6 +31,13 @@ export const Input = styled.input`
     #9f9f9f
 `;
 
+export const Select = styled.select`
+    padding: 10px 6px;
+    border-radius: 6px;
+    border: 1px solid black;
+    #9f9f9f
+`;
+
 export const Button = styled.button`
     padding: 10px;
     border: none;

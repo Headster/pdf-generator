@@ -22,6 +22,14 @@ foreach ($requiredFields as $field) {
     }
 }
 
+$allowedFormats = ["pdf", "html", "xlsx", "zip"];
+$format = strtolower(trim($_POST['format']));
+
+if (!in_array($format, $allowedFormats)) {
+    echo json_encode(["error" => "Invalid format selected. Allowed formats: PDF, HTML, XLSX, ZIP."]);
+    exit;
+}
+
 if (!isset($_FILES['image'])) {
     echo json_encode(["error" => "No image uploaded"]);
     exit;
@@ -56,7 +64,7 @@ $data = [
             "subject" => htmlspecialchars($_POST['subject'])
         ]
     ],
-    "format" => "pdf",
+    "format" => $format,
     "output" => "url",
     "name" => "Certificate Example"
 ];
