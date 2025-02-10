@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$requiredFields = ['date', 'signature_name', 'student_name', 'subject', 'format', 'certificate_name'];
+$requiredFields = ['template_id', 'date', 'signature_name', 'student_name', 'subject', 'format', 'certificate_name'];
 
 foreach ($requiredFields as $field) {
     if (!isset($_POST[$field]) || empty(trim($_POST[$field]))) {
@@ -52,10 +52,11 @@ if ($image['size'] > $maxFileSize) {
 
 $imageContent = file_get_contents($image['tmp_name']);
 $base64Image = base64_encode($imageContent);
+$template_id = htmlspecialchars($_POST['template_id']);
 
 $data = [
     "template" => [
-        "id" => "1327203",
+        "id" => $template_id,
         "data" => [
             "date" => htmlspecialchars($_POST['date']), // Prevent XSS
             "image" => "data:$fileType;base64,$base64Image",

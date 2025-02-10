@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Wrapper,
@@ -20,10 +20,29 @@ const Form = () => {
     subject: "",
     certificate_name: "",
     format: "pdf",
+    template_id: "",
   });
 
+  const [templates, setTemplates] = useState([]);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
+
+  useEffect(() => {
+    axios.get("http://localhost:8000/get-templates.php")
+      .then(response => {
+        if (response.data.response && Array.isArray(response.data.response)) {
+          setTemplates(response.data.response);
+        } else {
+          setMessage("Invalid templates response.");
+          setMessageType("error");
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching templates", error);
+        setMessage("Failed to load templates.");
+        setMessageType("error");
+      });
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -86,6 +105,15 @@ const Form = () => {
     <Wrapper>
       <FormContainer onSubmit={handleSubmit}>
         <FieldContainer>
+          <Label>Select Template:<span>*</span></Label>
+          <Select name="template_id" value={formData.template_id} onChange={handleChange} required>
+            <option value="">Select Template</option>
+            {templates.map(template => (
+              <option key={template.id} value={template.id}>{template.name}</option>
+            ))}
+          </Select>
+        </FieldContainer>
+        <FieldContainer>
           <Label>Date:<span>*</span></Label>
           <Input type="date" name="date" value={formData.date} onChange={handleChange} required />
         </FieldContainer>
@@ -118,7 +146,6 @@ const Form = () => {
             <option value="zip">ZIP</option>
           </Select>
         </FieldContainer>
-
 
         <Button type="submit">Generate</Button>
 
