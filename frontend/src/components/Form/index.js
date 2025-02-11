@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { getTemplates, submitForm } from "../../services/api";
+import React, { useState } from "react";
+import { submitForm } from "../../services/api";
 import {
     Wrapper,
     FormContainer,
@@ -7,11 +7,11 @@ import {
     Label,
     Input,
     Select,
-    Button,
     ErrorMessage,
 } from "./Form.styles";
+import Button from "../Button";
 
-const Form = () => {
+const Form = ({ templates, loading }) => {
     const [formData, setFormData] = useState({
         date: "",
         image: null,
@@ -23,25 +23,9 @@ const Form = () => {
         template_id: "",
     });
 
-    const [templates, setTemplates] = useState([]);
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        const fetchTemplates = async () => {
-            try {
-                const templatesData = await getTemplates();
-                setTemplates(Array.isArray(templatesData) ? templatesData : []);
-            } catch (error) {
-                console.error("Error fetching templates", error);
-                setMessage("Failed to load templates.");
-                setMessageType("error");
-            }
-        };
-
-        fetchTemplates();
-    }, []);
+    const [submitting, setSubmitting] = useState(false);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -71,8 +55,8 @@ const Form = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (loading) return;
-        setLoading(true);
+        if (submitting) return;
+        setSubmitting(true);
         setMessage("");
         setMessageType("");
 
@@ -93,16 +77,23 @@ const Form = () => {
             setMessage("Something went wrong! Please try again.");
             setMessageType("error");
         } finally {
-            setLoading(false);
+            setSubmitting(false);
         }
     };
 
     return (
         <Wrapper>
             <FormContainer onSubmit={handleSubmit}>
+                <h2>Generate Certificate</h2>
                 <FieldContainer>
                     <Label>Select Template:<span>*</span></Label>
-                    <Select name="template_id" value={formData.template_id} onChange={handleChange} required>
+                    <Select
+                        name="template_id"
+                        value={formData.template_id}
+                        onChange={handleChange}
+                        required
+                        disabled={loading}
+                    >
                         <option value="">Select Template</option>
                         {templates.map(template => (
                             <option key={template.id} value={template.id}>{template.name}</option>
@@ -143,8 +134,8 @@ const Form = () => {
                     </Select>
                 </FieldContainer>
 
-                <Button type="submit" disabled={loading}>
-                    {loading ? "Generating..." : "Generate"}
+                <Button type="submit" disabled={submitting}>
+                    {submitting ? "Generating..." : "Generate"}
                 </Button>
 
                 {message && (
