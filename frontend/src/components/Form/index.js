@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { getTemplates, submitForm } from "../../services/api";
 import {
   Wrapper,
   FormContainer,
@@ -26,22 +26,21 @@ const Form = () => {
   const [templates, setTemplates] = useState([]);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/get-templates.php")
-      .then(response => {
-        if (response.data.response && Array.isArray(response.data.response)) {
-          setTemplates(response.data.response);
-        } else {
-          setMessage("Invalid templates response.");
-          setMessageType("error");
-        }
-      })
-      .catch(error => {
+    const fetchTemplates = async () => {
+      try {
+        const templatesData = await getTemplates();
+        setTemplates(Array.isArray(templatesData) ? templatesData : []);
+      } catch (error) {
         console.error("Error fetching templates", error);
         setMessage("Failed to load templates.");
         setMessageType("error");
-      });
+      }
+    };
+
+    fetchTemplates();
   }, []);
 
   const handleChange = (e) => {
@@ -72,32 +71,22 @@ const Form = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+    setLoading(true);
     setMessage("");
     setMessageType("");
 
-    const data = new FormData();
-    Object.keys(formData).forEach((key) => {
-      data.append(key, formData[key]);
-    });
-
     try {
-      const response = await axios.post("http://localhost:8000/pdf-generator.php", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      if (response.data.error) {
-        setMessage(response.data.error);
-        setMessageType("error");
-      } else {
-        setMessage("Form submitted successfully!");
-        setMessageType("success");
-      }
+      const response = await submitForm(formData);
+      console.log("Form submitted:", response);
+      setMessage("Form submitted successfully!");
+      setMessageType("success");
     } catch (error) {
-      console.error("Submission failed", error);
-      setMessage("Something went wrong! Please try again.");
-      setMessageType("error");
+        console.error("Submission failed", error);
+        setMessage("Something went wrong! Please try again.");
+        setMessageType("error");
+    } finally {
+        setLoading(false);
     }
   };
 
@@ -147,7 +136,9 @@ const Form = () => {
           </Select>
         </FieldContainer>
 
-        <Button type="submit">Generate</Button>
+        <Button type="submit" disabled={loading}>
+            {loading ? "Generating..." : "Generate"}
+        </Button>
 
         {message && (
           <ErrorMessage style={{ color: messageType === "success" ? "green" : "red" }}>
