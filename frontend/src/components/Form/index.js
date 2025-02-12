@@ -64,10 +64,10 @@ const Form = ({ templates, loading }) => {
             const response = await submitForm(formData);
             console.log("Form submitted:", response);
 
-            if (response?.response) {
+            if (response?.file_url) {
                 setMessage("Certificate generated successfully!");
                 setMessageType("success");
-                window.open(response.response, "_blank");
+                window.open(response.file_url, "_blank");
             } else {
                 setMessage("PDF generation failed.");
                 setMessageType("error");

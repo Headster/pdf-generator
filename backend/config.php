@@ -23,4 +23,8 @@ function getEnvValue($key, $default = null) {
 $API_KEY = getEnvValue('API_KEY');
 $API_SECRET = getEnvValue('API_SECRET');
 $WORKSPACE = getEnvValue('WORKSPACE');
+$DB_HOST = getEnvValue('DB_HOST');
+$DB_USERNAME = getEnvValue('DB_USERNAME');
+$DB_PASSWORD = getEnvValue('DB_PASSWORD');
+$DB_NAME = getEnvValue('DB_NAME');
 ?>
