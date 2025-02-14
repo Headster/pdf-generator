@@ -1,9 +1,5 @@
 import styled from "styled-components";
 
-export const Wrapper = styled.div`
-
-`;
-
 export const FormContainer = styled.form`
     display: flex;
     flex-direction: column;

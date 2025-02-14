@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { submitForm } from "../../services/api";
 import {
-    Wrapper,
     FormContainer,
     FieldContainer,
     Label,
@@ -10,6 +9,9 @@ import {
     ErrorMessage,
 } from "./Form.styles";
 import Button from "../Button";
+
+const FILE_SIZE_5MB = 5 * 1024 * 1024;
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
 const Form = ({ templates, loading }) => {
     const [formData, setFormData] = useState({
@@ -33,14 +35,13 @@ const Form = ({ templates, loading }) => {
             const file = files[0];
 
             if (file) {
-                const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-                if (!allowedTypes.includes(file.type)) {
+                if (!ALLOWED_TYPES.includes(file.type)) {
                     setMessage("Invalid file type. Please upload an image (JPEG, PNG, GIF, WebP).");
                     setMessageType("error");
                     return;
                 }
 
-                if (file.size > 5 * 1024 * 1024) { // 5MB Max size
+                if (file.size > FILE_SIZE_5MB) {
                     setMessage("File too large. Maximum size is 5MB.");
                     setMessageType("error");
                     return;
@@ -82,7 +83,7 @@ const Form = ({ templates, loading }) => {
     };
 
     return (
-        <Wrapper>
+        <>
             <FormContainer onSubmit={handleSubmit}>
                 <h2>Generate Certificate</h2>
                 <FieldContainer>
@@ -144,7 +145,7 @@ const Form = ({ templates, loading }) => {
                     </ErrorMessage>
                 )}
             </FormContainer>
-        </Wrapper>
+        </>
     );
 };
 
